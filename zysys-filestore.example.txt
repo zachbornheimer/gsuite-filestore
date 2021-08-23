@@ -1,0 +1,11 @@
+<?php
+require_once('zysys-file-store.class.php');
+$fileStore = new Zysys_FileStore('/var/www/vhosts/isjac.org/.isjac-gsheets-gkey.json', '/var/www/vhosts/isjac.org/.credentials/zysys-file-store.class.json');
+#$fileStore->gsheet('1SX74Naxhxl4649a3evmtnpmpRAh9QUlcodGazdTxr18');
+#$fileStore->gsheet_row("Raw Data", "A2");
+#$fileStore->add_row('This is test 1', 'Test 2', 'Wow this is working!!!', 'huh...', 'yay!');
+
+$fileStore->local_store("/var/www/vhosts/isjac.org/test/");
+#$fileStore->drive_parent('0B3kNnjLx6r1GZWN0UGluTU05Mnc');
+$fileStore->create_local_subfolder("Jan24_Subfolder", true);
+#$fileStore->add_row("A2 Text", "A3 text", "Path: https://drive.google.com/a/isjac.org/file/d/" . $fileStore->store_file("zysys-file-store.class.php")[0] . "/view");
