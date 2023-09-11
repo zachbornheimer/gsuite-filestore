@@ -49,6 +49,9 @@ class Zysys_FileStore {
             $accessToken = json_decode(file_get_contents($credentialsPath), true);
         } else {
             // Request authorization from the user.
+
+            print "This authentication procedure is now non-functional.  Please setup using the get-credentials folder.";
+
             $authUrl = $client->createAuthUrl();
             printf("Open the following link in your browser:\n%s\n", $authUrl);
             print 'Enter verification code: ';
