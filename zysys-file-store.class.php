@@ -111,13 +111,6 @@ class Zysys_FileStore {
             Google_Service_Drive::DRIVE
         ]);
 
-        // Set the client secret configuration
-        if ($this->client_secret) {
-            $client->setAuthConfig(json_decode($this->client_secret, true));
-        } else {
-            throw new Exception("Client secret is missing or not configured.");
-        }
-
         // Set the access type to offline to ensure we can refresh tokens
         $client->setAccessType('offline');
 
@@ -139,12 +132,26 @@ class Zysys_FileStore {
             } else {
                 throw new Exception("Credentials path is invalid or not set.");
             }
+        } else {
+            // Set the client secret configuration
+            if ($this->client_secret) {
+                $keys = json_decode($this->client_secret, true);
+                // if there's only 1 key, get the object from the first key
+                if (count($keys) === 1) {
+                    $keys = $keys[array_key_first($keys)];
+                }
+
+                $client->setAuthConfig($keys);
+            } else {
+                throw new Exception("Client secret is missing or not configured.");
+            }
         }
 
         // Store the configured Google Client and related services
         $this->_var("gsuiteAgent", $client);
         $this->_var("sheetsAgent", new Google_Service_Sheets($client));
         $this->_var("driveAgent", new Google_Service_Drive($client));
+        $client->setAccessToken($this->access_key);
     }
 
     /**
