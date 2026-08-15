@@ -75,7 +75,7 @@ class Zysys_FileStore {
 	 * Load Google API libraries via Composer
 	 */
 	protected function _use_gsuite() {
-		require_once 'vendor/autoload.php';
+		require_once __DIR__ . '/vendor/autoload.php';
 	}
 
 	
@@ -233,6 +233,39 @@ class Zysys_FileStore {
 		$range  = sprintf( "'%s'!%s", $this->__get( 'gsheet_sheet_name' ), $this->__get( 'gsheet_row_identifier' ) );
 
 		$this->__get( 'sheetsAgent' )->spreadsheets_values->append( $this->__get( 'gsheet_id' ), $range, $body, $params );
+	}
+
+	/**
+	 * Read values from a range on the current spreadsheet.
+	 *
+	 * @param string $range A1 range, including sheet name.
+	 * @return array
+	 */
+	public function read_range( $range ) {
+		if ( ! $this->__get( 'gsheet_id' ) ) {
+			throw new Exception( 'Error: gsheet_id not set.' );
+		}
+
+		$resp   = $this->__get( 'sheetsAgent' )->spreadsheets_values->get( $this->__get( 'gsheet_id' ), $range );
+		$values = $resp ? $resp->getValues() : null;
+		return is_array( $values ) ? $values : array();
+	}
+
+	/**
+	 * Overwrite a range with one RAW row on the current spreadsheet.
+	 *
+	 * @param string $range A1 range, including sheet name.
+	 * @param array  $row   Cell values.
+	 * @return void
+	 */
+	public function update_values( $range, array $row ) {
+		if ( ! $this->__get( 'gsheet_id' ) ) {
+			throw new Exception( 'Error: gsheet_id not set.' );
+		}
+
+		$body   = new Google_Service_Sheets_ValueRange( array( 'values' => array( array_values( $row ) ) ) );
+		$params = array( 'valueInputOption' => 'RAW' );
+		$this->__get( 'sheetsAgent' )->spreadsheets_values->update( $this->__get( 'gsheet_id' ), $range, $body, $params );
 	}
 
 	/**
