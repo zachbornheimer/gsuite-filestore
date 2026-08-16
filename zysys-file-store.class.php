@@ -278,6 +278,19 @@ class Zysys_FileStore {
 	}
 
 	/**
+	 * Options every Drive files write must send.
+	 *
+	 * Shared Drive parents 403 unless supportsAllDrives is true.
+	 *
+	 * @param array $opts Call-specific Drive files options.
+	 * @return array
+	 */
+	protected function drive_write_params( array $opts = array() ) {
+		$opts['supportsAllDrives'] = true;
+		return $opts;
+	}
+
+	/**
 	 * Set the local storage path.
 	 * 
 	 * @param string $path Directory path.
@@ -386,7 +399,10 @@ class Zysys_FileStore {
 			)
 		);
 
-		$file = $this->__get( 'driveAgent' )->files->create( $fileMetadata, array( 'fields' => 'id' ) );
+		$file = $this->__get( 'driveAgent' )->files->create(
+			$fileMetadata,
+			$this->drive_write_params( array( 'fields' => 'id' ) )
+		);
 
 		if ( $switch_to ) {
 			$this->drive_parent( $file->id );
@@ -434,11 +450,13 @@ class Zysys_FileStore {
 
 		$file = $this->__get( 'driveAgent' )->files->create(
 			$fileMetadata,
-			array(
-				'data'       => file_get_contents( $filepath ),
-				'mimeType'   => mime_content_type( $filepath ),
-				'uploadType' => 'multipart',
-				'fields'     => 'id',
+			$this->drive_write_params(
+				array(
+					'data'       => file_get_contents( $filepath ),
+					'mimeType'   => mime_content_type( $filepath ),
+					'uploadType' => 'multipart',
+					'fields'     => 'id',
+				)
 			)
 		);
 
