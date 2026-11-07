@@ -1,0 +1,11 @@
+title = "gsuite-filestore gitleaks config"
+
+[extend]
+useDefault = true
+
+# vendor/ is committed Composer output. The Google API client generated
+# classes name properties like `encryptionKey`/`rawKey` (schema fields, not
+# secrets), which trip generic-api-key.
+[[allowlists]]
+description = "Committed Composer vendor tree"
+paths = ['''^vendor/''']
